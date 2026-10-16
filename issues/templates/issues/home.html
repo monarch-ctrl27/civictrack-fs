@@ -1,0 +1,67 @@
+{% extends "issues/base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-eyebrow">A community reporting platform for the Free State</div>
+      <h1>Every ignored pothole deserves a paper trail.</h1>
+      <p class="lede">CivicTrack FS lets residents report, track, and discuss local problems — from burst pipes to unsafe streets — and gives municipalities and NGOs the real-time data to act on them.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="{% url 'issues:report_create' %}">Report an issue</a>
+        <a class="btn btn-ghost" href="{% url 'issues:map_feed' %}">See the community map</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>{{ total_reports }}</strong><span>Issues logged</span></div>
+        <div class="hero-stat"><strong>{{ resolved_reports }}</strong><span>Marked resolved</span></div>
+        <div class="hero-stat"><strong>{{ district_count }}</strong><span>Districts covered</span></div>
+        <div class="hero-stat"><strong>{{ category_count }}</strong><span>Issue categories</span></div>
+      </div>
+    </div>
+    <div class="hero-art">
+      <svg viewBox="0 0 360 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration of a map pin over a stylised Free State landscape">
+        <defs>
+          <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#2B4570" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#C6921B" stop-opacity="0.10"/>
+          </linearGradient>
+        </defs>
+        <rect x="8" y="8" width="344" height="324" rx="18" fill="url(#skyGrad)" stroke="#DDD2B7"/>
+        <ellipse cx="180" cy="255" rx="130" ry="18" fill="#C6921B" opacity="0.18"/>
+        <path d="M40 230 Q100 190 180 220 T320 200" stroke="#4E7A54" stroke-width="3" fill="none" opacity="0.55"/>
+        <path d="M30 250 Q110 215 180 240 T330 225" stroke="#A6532D" stroke-width="2" fill="none" opacity="0.4" stroke-dasharray="1 7" stroke-linecap="round"/>
+        <g>
+          <circle cx="150" cy="120" r="46" fill="#C6921B" opacity="0.16"/>
+          <path d="M180 100c0 34-28 62-32 96-4-34-32-62-32-96a32 32 0 0 1 64 0z" fill="#A6532D"/>
+          <circle cx="148" cy="98" r="13" fill="#FFFFFF"/>
+        </g>
+        <g opacity="0.85">
+          <circle cx="255" cy="150" r="7" fill="#2B4570"/>
+          <circle cx="270" cy="195" r="6" fill="#4E7A54"/>
+          <circle cx="90" cy="175" r="6" fill="#8C2F39"/>
+          <circle cx="235" cy="205" r="5" fill="#C6921B"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="about-strip">
+  <div class="about-grid">
+    <div class="about-card">
+      <h4>Report in under a minute</h4>
+      <p>A short mobile-friendly form with lightweight AI-assisted category suggestion, so residents don't need to know municipal terminology to be heard.</p>
+    </div>
+    <div class="about-card">
+      <h4>See what's happening nearby</h4>
+      <p>An interactive district map and community feed turn scattered complaints into a shared, verifiable picture of local problems.</p>
+    </div>
+    <div class="about-card">
+      <h4>Data municipalities can act on</h4>
+      <p>A live analytics dashboard gives officials and NGOs hotspots, trends, and status tracking to prioritise the right interventions.</p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

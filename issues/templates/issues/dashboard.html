@@ -1,0 +1,78 @@
+{% extends "issues/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<section class="view">
+  <div class="view-head">
+    <div>
+      <h2>Municipal dashboard</h2>
+      <p>Aggregated, real-time view of community-reported issues for planning and resource allocation.</p>
+    </div>
+    {% if role != "official" %}
+      <span class="badge" style="background:var(--gold-soft); color:var(--clay)">Switch to &ldquo;Municipal official&rdquo; to edit statuses</span>
+    {% endif %}
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-tile"><strong>{{ total_reports }}</strong><span>Total reports</span></div>
+    <div class="stat-tile"><strong>{{ open_reports }}</strong><span>Currently open</span></div>
+    <div class="stat-tile"><strong>{{ resolved_reports }}</strong><span>Resolved</span></div>
+    <div class="stat-tile"><strong>{% if top_district %}{{ top_district.name }}{% else %}&mdash;{% endif %}</strong><span>Most-reported district</span></div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h4>Reports by category</h4>
+      <img src="data:image/png;base64,{{ category_chart }}" alt="Bar chart of reports by category" style="max-width:100%;">
+    </div>
+    <div class="chart-card">
+      <h4>Reports by district</h4>
+      <img src="data:image/png;base64,{{ district_chart }}" alt="Bar chart of reports by district" style="max-width:100%;">
+    </div>
+    <div class="chart-card">
+      <h4>Status breakdown</h4>
+      <img src="data:image/png;base64,{{ status_chart }}" alt="Donut chart of report status breakdown" style="max-width:100%;">
+    </div>
+    <div class="chart-card">
+      <h4>Reports over time</h4>
+      <img src="data:image/png;base64,{{ trend_chart }}" alt="Line chart of cumulative reports over time" style="max-width:100%;">
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th>Issue</th><th>Category</th><th>District</th><th>Date</th><th>Support</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        {% for report in reports %}
+          <tr>
+            <td>{{ report.title }}</td>
+            <td><span class="badge" style="background:{{ report.category_color }}22; color:{{ report.category_color }}">{{ report.category_label }}</span></td>
+            <td>{{ report.district_name }}</td>
+            <td>{{ report.created_at|date:"j M Y" }}</td>
+            <td>{{ report.votes }}</td>
+            <td>
+              {% if role == "official" %}
+                <form method="post" action="{% url 'issues:status_update' report.pk %}" class="status-form">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{% url 'issues:dashboard' %}">
+                  <select name="status" class="status-select" aria-label="Update status">
+                    {% for status_id, status_label in statuses %}
+                      <option value="{{ status_id }}" {% if report.status == status_id %}selected{% endif %}>{{ status_label }}</option>
+                    {% endfor %}
+                  </select>
+                  <button type="submit" class="btn btn-ghost btn-sm">Update</button>
+                </form>
+              {% else %}
+                <span class="badge" style="background:{{ report.status_soft_color }}; color:{{ report.status_color }}">{{ report.get_status_display }}</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% endblock %}

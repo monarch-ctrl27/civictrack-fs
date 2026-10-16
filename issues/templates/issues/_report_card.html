@@ -1,0 +1,51 @@
+<article class="report-card" style="--cat-color:{{ report.category_color }}">
+  <div class="report-card-top">
+    <div>
+      <h4>{{ report.title }}</h4>
+      <div class="report-meta">{{ report.district_name }} &middot; {{ report.created_at|date:"j M Y" }}</div>
+    </div>
+    {% if role == "official" %}
+      <form method="post" action="{% url 'issues:status_update' report.pk %}" class="status-form">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next_url }}">
+        <select name="status" class="status-select" aria-label="Update status">
+          {% for status_id, status_label in statuses %}
+            <option value="{{ status_id }}" {% if report.status == status_id %}selected{% endif %}>{{ status_label }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-ghost btn-sm">Update</button>
+      </form>
+    {% else %}
+      <span class="badge" style="background:{{ report.status_soft_color }}; color:{{ report.status_color }}">{{ report.get_status_display }}</span>
+    {% endif %}
+  </div>
+
+  <span class="badge" style="background:{{ report.category_color }}22; color:{{ report.category_color }}">{{ report.category_label }}</span>
+  <p class="report-desc">{{ report.description }}</p>
+
+  <div class="report-actions">
+    <form method="post" action="{% url 'issues:vote' report.pk %}" class="inline-form">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next_url }}">
+      <button type="submit" class="vote-btn {% if report.pk in voted_reports %}voted{% endif %}">
+        &#128077; I have this too &middot; {{ report.votes }}
+      </button>
+    </form>
+    <span class="comment-count">&#128172; {{ report.comments.count }} comment{{ report.comments.count|pluralize }}</span>
+  </div>
+
+  <details class="comments-block">
+    <summary>View / add comments</summary>
+    {% for comment in report.comments.all %}
+      <div class="comment-item"><b>{{ comment.author_name }}:</b> {{ comment.text }}</div>
+    {% empty %}
+      <div class="comment-item" style="color:var(--ink-soft)">No comments yet — be the first to add local context.</div>
+    {% endfor %}
+    <form method="post" action="{% url 'issues:comment_add' report.pk %}" class="comment-add">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next_url }}">
+      <input type="text" name="text" placeholder="Add a comment" maxlength="280" required>
+      <button type="submit">Post</button>
+    </form>
+  </details>
+</article>

@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}CivicTrack FS{% endblock %} — Free State Community Issue Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'issues/css/style.css' %}">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner wrap">
+    <a class="brand" href="{% url 'issues:home' %}">
+      <div class="brand-mark">🌾</div>
+      <div class="brand-text">
+        <strong>CivicTrack FS</strong>
+        <span>Free State community reporting</span>
+      </div>
+    </a>
+    <nav class="tabs">
+      <a href="{% url 'issues:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+      <a href="{% url 'issues:report_create' %}" class="{% if request.resolver_match.url_name == 'report_create' %}active{% endif %}">Report an issue</a>
+      <a href="{% url 'issues:map_feed' %}" class="{% if request.resolver_match.url_name == 'map_feed' %}active{% endif %}">Map &amp; feed</a>
+      <a href="{% url 'issues:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a>
+    </nav>
+    <div class="role-toggle">
+      <a href="{% url 'issues:set_role' %}?role=resident&next={{ request.path|urlencode }}" class="{% if role == 'resident' %}active{% endif %}">Resident</a>
+      <a href="{% url 'issues:set_role' %}?role=official&next={{ request.path|urlencode }}" class="{% if role == 'official' %}active{% endif %}">Municipal official</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="message {{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+
+<nav class="mobile-nav">
+  <a href="{% url 'issues:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}"><span class="mn-icon">🏠</span>Home</a>
+  <a href="{% url 'issues:report_create' %}" class="{% if request.resolver_match.url_name == 'report_create' %}active{% endif %}"><span class="mn-icon">📍</span>Report</a>
+  <a href="{% url 'issues:map_feed' %}" class="{% if request.resolver_match.url_name == 'map_feed' %}active{% endif %}"><span class="mn-icon">🗺️</span>Map</a>
+  <a href="{% url 'issues:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><span class="mn-icon">📊</span>Data</a>
+</nav>
+
+<footer>
+  <div class="wrap">
+    <span>CivicTrack FS — a Kopano Digital Collective project, built with Django.</span>
+    <span>{% if role == 'official' %}Viewing as: Municipal official{% else %}Viewing as: Resident{% endif %}</span>
+  </div>
+</footer>
+
+</body>
+</html>

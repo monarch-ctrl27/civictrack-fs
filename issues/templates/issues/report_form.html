@@ -1,0 +1,80 @@
+{% extends "issues/base.html" %}
+{% block title %}Report an issue{% endblock %}
+{% block content %}
+
+<section class="view">
+  <div class="view-head">
+    <div>
+      <h2>Report an issue</h2>
+      <p>Tell us what's wrong and where. Your report joins the public community feed and the municipal dashboard immediately.</p>
+    </div>
+  </div>
+
+  <div class="form-shell">
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      <div class="field">
+        <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+        {{ form.title }}
+        {% if form.title.errors %}<div class="field-error">{{ form.title.errors|join:" " }}</div>{% endif %}
+      </div>
+
+      <div class="field">
+        <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+        {{ form.description }}
+        {% if form.description.errors %}<div class="field-error">{{ form.description.errors|join:" " }}</div>{% endif %}
+        <div class="hint">CivicTrack runs a lightweight keyword classifier over this text to suggest a category — a production deployment would use a trained NLP model instead.</div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
+          {{ form.category }}
+        </div>
+        <div class="field">
+          <label for="{{ form.district.id_for_label }}">{{ form.district.label }}</label>
+          {{ form.district }}
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="{{ form.reporter_name.id_for_label }}">{{ form.reporter_name.label }}</label>
+        {{ form.reporter_name }}
+      </div>
+
+      <div class="field">
+        <label for="{{ form.photo.id_for_label }}">{{ form.photo.label }}</label>
+        <div class="file-drop">
+          {{ form.photo }}
+        </div>
+        {% if form.photo.errors %}<div class="field-error">{{ form.photo.errors|join:" " }}</div>{% endif %}
+      </div>
+
+      <button class="btn btn-primary" type="submit">Submit report</button>
+    </form>
+
+    <div>
+      <div class="side-note">
+        <h4>What happens next</h4>
+        <ol>
+          <li>Your report is timestamped, geotagged to your district, and added to the public feed.</li>
+          <li>Similar reports from neighbours help verify and prioritise it.</li>
+          <li>Municipal officials update its status as it moves toward resolution.</li>
+        </ol>
+      </div>
+      <div class="side-note">
+        <h4>Categories we track</h4>
+        <ul>
+          {% for category in form.category.field.choices %}
+            {% if category.0 != "auto" and category.0 != "other" %}
+              <li>{{ category.1 }}</li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

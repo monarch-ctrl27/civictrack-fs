@@ -1,0 +1,83 @@
+{% extends "issues/base.html" %}
+{% block title %}Map & feed{% endblock %}
+{% block content %}
+
+<section class="view">
+  <div class="view-head">
+    <div>
+      <h2>Community map &amp; feed</h2>
+      <p>Explore reported issues by district, category, and status. Click a district on the map, or use the filters below, to narrow the feed.</p>
+    </div>
+  </div>
+
+  <form method="get" class="filter-bar">
+    <select name="category">
+      <option value="all" {% if active_filters.category == "all" %}selected{% endif %}>All categories</option>
+      {% for c in categories %}
+        <option value="{{ c.id }}" {% if active_filters.category == c.id %}selected{% endif %}>{{ c.label }}</option>
+      {% endfor %}
+    </select>
+    <select name="status">
+      <option value="all" {% if active_filters.status == "all" %}selected{% endif %}>All statuses</option>
+      {% for status_id, status_label in statuses %}
+        <option value="{{ status_id }}" {% if active_filters.status == status_id %}selected{% endif %}>{{ status_label }}</option>
+      {% endfor %}
+    </select>
+    <select name="district">
+      <option value="all" {% if active_filters.district == "all" %}selected{% endif %}>All districts</option>
+      {% for d in districts %}
+        <option value="{{ d.id }}" {% if active_filters.district == d.id %}selected{% endif %}>{{ d.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-ghost btn-sm">Apply filters</button>
+    {% if active_filters.category != "all" or active_filters.status != "all" or active_filters.district != "all" %}
+      <a class="btn btn-ghost btn-sm" href="{% url 'issues:map_feed' %}">Clear</a>
+    {% endif %}
+  </form>
+
+  <div class="map-feed-grid">
+    <div class="map-panel">
+      <div class="map-panel-head">
+        <h3>District hotspot map</h3>
+        <span>Illustrative, not to scale</span>
+      </div>
+      <div class="map-svg-wrap">
+        <svg viewBox="0 0 600 500" xmlns="http://www.w3.org/2000/svg">
+          {% for d in districts %}
+            <a href="{{ d.toggle_url }}">
+              <rect class="district-shape {% if d.active %}active{% endif %}"
+                    x="{{ d.box.0 }}" y="{{ d.box.1 }}"
+                    width="{{ d.box_width }}" height="{{ d.box_height }}" rx="22">
+                <title>{{ d.name }} — {{ d.towns }} (click to filter)</title>
+              </rect>
+              <text class="district-label" x="{{ d.label_x }}" y="{{ d.label_y }}" text-anchor="middle">{{ d.name }}</text>
+              <text class="district-sub" x="{{ d.label_x }}" y="{{ d.sub_y }}" text-anchor="middle">{{ d.towns }}</text>
+            </a>
+          {% endfor %}
+          {% for report in reports %}
+            <circle class="report-dot" cx="{{ report.map_x }}" cy="{{ report.map_y }}" r="6" fill="{{ report.category_color }}">
+              <title>{{ report.title }} — {{ report.get_status_display }}</title>
+            </circle>
+          {% endfor %}
+        </svg>
+      </div>
+      <div class="map-legend">
+        {% for c in categories %}
+          <div class="legend-item"><span class="legend-dot" style="background:{{ c.color }}"></span>{{ c.label }}</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="feed-list">
+      {% if reports %}
+        {% for report in reports %}
+          {% include "issues/_report_card.html" %}
+        {% endfor %}
+      {% else %}
+        <p style="color:var(--ink-soft); font-size:14px;">No reports match these filters yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

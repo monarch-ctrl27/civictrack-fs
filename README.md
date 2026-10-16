@@ -4,7 +4,7 @@ A community-driven issue reporting platform for the Free State, South Africa —
 built entirely with **Python, Django, HTML, and CSS** (no JavaScript), so it's
 easy to read, extend, and maintain after the hackathon.
 
-Team: Kopano Digital Collective
+Team: CivicTrack FS
 
 ## What it does
 
